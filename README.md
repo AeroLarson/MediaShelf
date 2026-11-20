@@ -7,7 +7,8 @@ Intermediate Java Programming project, Fall 2026. Aero Larson.
 ## Status
 
 - Week 2: model classes (MediaItem, Book, Movie, Game, Library) are written with validation. `ModelTester` has some quick console tests.
-- Coming next: save/load, the ratings stats, and then the GUI.
+- Week 3: ratings stats (2D array) and save/load to a text file. Sample files are in `data/`.
+- Coming next: more testing, then the GUI.
 
 ## Running the tests
 
