@@ -1,0 +1,3 @@
+BOOK|The Hobbit|1937|5|FINISHED|J.R.R. Tolkien|310
+MOVIE|Inception|twenty ten|4|FINISHED|Christopher Nolan|148
+GAME|Celeste|2018|4|FINISHED|PC|18

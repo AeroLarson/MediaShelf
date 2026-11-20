@@ -8,7 +8,7 @@ import java.time.Year;
  * MediaItem is-a Recordable and is-a Comparable. MediaItem has-a Status.
  *
  * @author Aero Larson
- * @version Week 2
+ * @version Week 3
  */
 public abstract class MediaItem implements Recordable, Comparable<MediaItem> {
 
@@ -64,12 +64,16 @@ public abstract class MediaItem implements Recordable, Comparable<MediaItem> {
      * @param value     the text
      * @param fieldName field name for the error message
      * @return the text, trimmed
-     * @throws InvalidMediaException if it's blank
+     * @throws InvalidMediaException if it's blank or has a |
      */
     protected static String requireText(String value, String fieldName)
             throws InvalidMediaException {
         if (value == null || value.trim().isEmpty()) {
             throw new InvalidMediaException(fieldName + " can't be blank");
+        }
+        // | would break the save file
+        if (value.contains(SEPARATOR)) {
+            throw new InvalidMediaException(fieldName + " can't have a | in it");
         }
         return value.trim();
     }
@@ -115,8 +119,10 @@ public abstract class MediaItem implements Recordable, Comparable<MediaItem> {
      */
     @Override
     public String toRecord() {
-        // TODO: week 3
-        return "";
+        // name() not toString() so valueOf() can read it back
+        return getType().name() + SEPARATOR + title + SEPARATOR + year
+                + SEPARATOR + rating + SEPARATOR + status.name()
+                + SEPARATOR + getCreator() + SEPARATOR + getExtraDetail();
     }
 
     /**

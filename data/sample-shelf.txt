@@ -1,0 +1,8 @@
+BOOK|The Hobbit|1937|5|FINISHED|J.R.R. Tolkien|310
+BOOK|Project Hail Mary|2021|4|IN_PROGRESS|Andy Weir|476
+MOVIE|Spirited Away|2001|5|FINISHED|Hayao Miyazaki|125
+MOVIE|Inception|2010|4|FINISHED|Christopher Nolan|148
+GAME|Hollow Knight|2017|5|IN_PROGRESS|Switch|52
+GAME|Celeste|2018|4|FINISHED|PC|18
+BOOK|Dune|1965|3|PLANNED|Frank Herbert|412
+MOVIE|Dune: Part Two|2024|4|PLANNED|Denis Villeneuve|166
