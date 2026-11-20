@@ -1,10 +1,13 @@
 package mediashelf;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
  * Quick console tests for the model classes until the GUI is done.
  *
  * @author Aero Larson
- * @version Week 2
+ * @version Week 3
  */
 public class ModelTester {
 
@@ -40,6 +43,7 @@ public class ModelTester {
         tryBadBook("rating 6", "Book", 2000, 6, "Author", 100);
         tryBadBook("blank author", "Book", 2000, 3, " ", 100);
         tryBadBook("0 pages", "Book", 2000, 3, "Author", 0);
+        tryBadBook("| in title", "A|B", 2000, 3, "Author", 100);
         try {
             new Game("Game", 2000, 3, Status.PLANNED, "PC", -1);
             check("negative hours", false);
@@ -80,8 +84,94 @@ public class ModelTester {
             check("library items shouldn't throw: " + e.getMessage(), false);
         }
 
+        testWeek3();
+
         System.out.println();
         System.out.println("passed " + passed + ", failed " + failed);
+    }
+
+    /**
+     * Week 3 tests: stats, saving, and loading.
+     */
+    private static void testWeek3() {
+        LibraryFileManager files = new LibraryFileManager();
+
+        System.out.println();
+        System.out.println("--- stats ---");
+        try {
+            Library library = files.load(new File("data/sample-shelf.txt"));
+            check("loaded sample file", library.size() == 8);
+
+            LibraryStats stats = new LibraryStats();
+            stats.compute(library);
+            check("2 movies with 4 stars", stats.getCount(MediaType.MOVIE, 4) == 2);
+            check("3 books total", stats.getTotal(MediaType.BOOK) == 3);
+            check("game average 4.5", stats.getAverageRating(MediaType.GAME) == 4.5);
+            check("empty library average 0", emptyAverage() == 0.0);
+
+            System.out.println();
+            System.out.println("--- save and load ---");
+            File saved = new File("data/test-save.txt");
+            files.save(library, saved);
+            Library loaded = files.load(saved);
+            check("same number of items after reload", loaded.size() == 8);
+            check("first item matches", loaded.getItems().get(0).toString()
+                    .equals(library.getItems().get(0).toString()));
+            saved.delete();
+        } catch (IOException | InvalidMediaException e) {
+            check("sample file should load: " + e.getMessage(), false);
+        }
+
+        System.out.println();
+        System.out.println("--- bad files ---");
+        try {
+            files.load(new File("data/broken-shelf.txt"));
+            check("broken file", false);
+        } catch (InvalidMediaException e) {
+            check("broken file line " + e.getLineNumber() + " -> " + e.getMessage(),
+                    e.getLineNumber() == 2);
+        } catch (IOException e) {
+            check("broken file: " + e.getMessage(), false);
+        }
+
+        try {
+            files.load(new File("data/nope.txt"));
+            check("missing file", false);
+        } catch (IOException e) {
+            check("missing file -> IOException", true);
+        } catch (InvalidMediaException e) {
+            check("missing file", false);
+        }
+
+        tryBadLine("wrong number of fields", "BOOK|Dune|1965");
+        tryBadLine("unknown type", "COMIC|Watchmen|1987|5|FINISHED|Alan Moore|416");
+        tryBadLine("unknown status", "BOOK|Dune|1965|3|DROPPED|Frank Herbert|412");
+        tryBadLine("rating not a number", "BOOK|Dune|1965|three|PLANNED|Frank Herbert|412");
+        tryBadLine("rating 9", "BOOK|Dune|1965|9|PLANNED|Frank Herbert|412");
+    }
+
+    /**
+     * @return the average for an empty library
+     */
+    private static double emptyAverage() {
+        LibraryStats stats = new LibraryStats();
+        stats.compute(new Library());
+        return stats.getAverageRating(MediaType.BOOK);
+    }
+
+    /**
+     * Parses a line that should fail and checks that it does.
+     *
+     * @param what what's being tested
+     * @param line the save file line
+     */
+    private static void tryBadLine(String what, String line) {
+        try {
+            new RecordParser().parse(line, 1);
+            check(what, false);
+        } catch (InvalidMediaException e) {
+            check(what + " -> " + e.getMessage(), true);
+        }
     }
 
     /**
