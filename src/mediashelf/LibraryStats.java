@@ -5,7 +5,7 @@ package mediashelf;
  * Uses a 2D array: rows are media types, columns are ratings.
  *
  * @author Aero Larson
- * @version Week 2
+ * @version Week 3
  */
 public class LibraryStats {
 
@@ -25,7 +25,15 @@ public class LibraryStats {
      * @param library the library to count
      */
     public void compute(Library library) {
-        // TODO: week 3
+        // reset to 0 first
+        for (int row = 0; row < ratingCounts.length; row++) {
+            for (int col = 0; col < ratingCounts[row].length; col++) {
+                ratingCounts[row][col] = 0;
+            }
+        }
+        for (MediaItem item : library.getItems()) {
+            ratingCounts[item.getType().ordinal()][item.getRating() - 1]++;
+        }
     }
 
     /**
@@ -42,8 +50,11 @@ public class LibraryStats {
      * @return total items of that type
      */
     public int getTotal(MediaType type) {
-        // TODO: week 3
-        return 0;
+        int total = 0;
+        for (int count : ratingCounts[type.ordinal()]) {
+            total += count;
+        }
+        return total;
     }
 
     /**
@@ -51,7 +62,16 @@ public class LibraryStats {
      * @return average rating for that type, or 0 if there are none
      */
     public double getAverageRating(MediaType type) {
-        // TODO: week 3
-        return 0.0;
+        int total = getTotal(type);
+        if (total == 0) {
+            return 0.0;
+        }
+        int sum = 0;
+        int[] row = ratingCounts[type.ordinal()];
+        for (int col = 0; col < row.length; col++) {
+            // col 0 is 1 star
+            sum += row[col] * (col + 1);
+        }
+        return (double) sum / total;
     }
 }
